@@ -23,10 +23,19 @@ namespace Farms.Controllers
             {
                 if (!string.IsNullOrEmpty(farm.Name) && !string.IsNullOrEmpty(farm.Description))
                 {
-                    var lastFarm = FarmData.FarmList.Last();
-                    farm.Id = lastFarm.Id + 1;
-                    FarmData.FarmList.Add(farm);
-                    return Json(farm, JsonRequestBehavior.AllowGet);
+                    var lastFarm = FarmData.FarmList.LastOrDefault();
+                    if (lastFarm == null)
+                    {
+                        farm.Id = 1;
+                        FarmData.FarmList.Add(farm);
+                        return Json(farm, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        farm.Id = lastFarm.Id + 1;
+                        FarmData.FarmList.Add(farm);
+                        return Json(farm, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -44,8 +53,12 @@ namespace Farms.Controllers
                 if (farmId != null)
                 {
                     var farm = FarmData.FarmList.Where(f => f.Id == farmId).FirstOrDefault();
-                    FarmData.FarmList.Remove(farm);
-                    return Json(true, JsonRequestBehavior.AllowGet);
+                    if (farm != null)
+                    {
+                        FarmData.FarmList.Remove(farm);
+                        return Json(true, JsonRequestBehavior.AllowGet);
+                    }
+
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -80,9 +93,13 @@ namespace Farms.Controllers
             try
             {
                 var foundFarm = FarmData.FarmList.Where(s => s.Id == farm.Id).FirstOrDefault();
-                foundFarm.Name = farm.Name;
-                foundFarm.Description = farm.Description;
-                return Json(foundFarm, JsonRequestBehavior.AllowGet);
+                if (foundFarm != null)
+                {
+                    foundFarm.Name = farm.Name;
+                    foundFarm.Description = farm.Description;
+                    return Json(foundFarm, JsonRequestBehavior.AllowGet);
+                }
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
             catch
             {
@@ -123,7 +140,7 @@ namespace Farms.Controllers
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            
+
         }
 
 

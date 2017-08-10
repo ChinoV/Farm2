@@ -46,10 +46,17 @@ namespace Farm2.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(parcel.Size.ToString()) && !string.IsNullOrEmpty(parcel.Description) && parcel.Observations.Count > 0)
+                if (parcel.Size > 0 && !string.IsNullOrEmpty(parcel.Description) && parcel.Observations.Count > 0)
                 {
                     parcel.PlantIds = new List<int>();
-                    parcel.Id = (ParcelData.ParcelList.LastOrDefault()).Id + 1;
+                    if (ParcelData.ParcelList.LastOrDefault() == null)
+                    {
+                        parcel.Id = 1;
+                    }
+                    else
+                    {
+                        parcel.Id = (ParcelData.ParcelList.LastOrDefault()).Id + 1;
+                    }
                     ParcelData.ParcelList.Add(parcel);
                     return Json(parcel, JsonRequestBehavior.AllowGet);
                 }
@@ -59,7 +66,7 @@ namespace Farm2.Controllers
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-           
+
         }
 
         [HttpGet]
@@ -70,7 +77,10 @@ namespace Farm2.Controllers
                 if (parcelId != null)
                 {
                     var parcel = ParcelData.ParcelList.Where(s => s.Id == parcelId).FirstOrDefault();
-                    return Json(parcel, JsonRequestBehavior.AllowGet);
+                    if (parcel != null)
+                    {
+                        return Json(parcel, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -78,7 +88,7 @@ namespace Farm2.Controllers
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            
+
         }
 
         [HttpPut]
@@ -86,22 +96,25 @@ namespace Farm2.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(parcel.Size.ToString()) && !string.IsNullOrEmpty(parcel.Description) && parcel.Observations.Count > 0)
+                if (parcel.Size > 0 && !string.IsNullOrEmpty(parcel.Description) && parcel.Observations.Count > 0)
                 {
                     var foundParcel = ParcelData.ParcelList.Where(s => s.Id == parcel.Id).FirstOrDefault();
-                    foundParcel.Size = parcel.Size;
-                    foundParcel.Description = parcel.Description;
-                    foundParcel.Observations = parcel.Observations;
-                    foundParcel.ConditionIds = parcel.ConditionIds;
-                    return Json(foundParcel, JsonRequestBehavior.AllowGet);
+                    if (foundParcel != null)
+                    {
+                        foundParcel.Size = parcel.Size;
+                        foundParcel.Description = parcel.Description;
+                        foundParcel.Observations = parcel.Observations;
+                        foundParcel.ConditionIds = parcel.ConditionIds;
+                        return Json(foundParcel, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            catch 
+            catch
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            
+
         }
 
         [HttpDelete]
@@ -112,8 +125,12 @@ namespace Farm2.Controllers
                 if (parcelId != null)
                 {
                     var parcel = ParcelData.ParcelList.Where(f => f.Id == parcelId).FirstOrDefault();
-                    ParcelData.ParcelList.Remove(parcel);
-                    return Json(true, JsonRequestBehavior.AllowGet);
+                    if (parcel != null)
+                    {
+                        ParcelData.ParcelList.Remove(parcel);
+                        return Json(true, JsonRequestBehavior.AllowGet);
+                    }
+
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }

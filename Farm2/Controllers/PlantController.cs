@@ -44,8 +44,11 @@ namespace Farm2.Controllers
                 if (plantId != null)
                 {
                     var plant = PlantData.PlantList.Where(f => f.Id == plantId).FirstOrDefault();
-                    PlantData.PlantList.Remove(plant);
-                    return Json(true, JsonRequestBehavior.AllowGet);
+                    if (plant == null)
+                    {
+                        PlantData.PlantList.Remove(plant);
+                        return Json(true, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -63,7 +66,10 @@ namespace Farm2.Controllers
                 if (plantId != null)
                 {
                     var plant = PlantData.PlantList.Where(s => s.Id == plantId).FirstOrDefault();
-                    return Json(plant, JsonRequestBehavior.AllowGet);
+                    if (plant != null)
+                    {
+                        return Json(plant, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -80,12 +86,17 @@ namespace Farm2.Controllers
             try
             {
                 var foundPlant = PlantData.PlantList.Where(s => s.Id == plant.Id).FirstOrDefault();
-                foundPlant.Name = plant.Name;
-                foundPlant.Description = plant.Description;
-                foundPlant.PlantedDate = plant.PlantedDate;
-                foundPlant.IdParcel = plant.IdParcel;
-                foundPlant.PlantType = plant.PlantType;
-                return Json(foundPlant, JsonRequestBehavior.AllowGet);
+                if (foundPlant != null)
+                {
+                    foundPlant.Name = plant.Name;
+                    foundPlant.Description = plant.Description;
+                    foundPlant.PlantedDate = plant.PlantedDate;
+                    foundPlant.IdParcel = plant.IdParcel;
+                    foundPlant.PlantType = plant.PlantType;
+                    return Json(foundPlant, JsonRequestBehavior.AllowGet);
+                }
+                return Json(false, JsonRequestBehavior.AllowGet);
+
             }
             catch (Exception)
             {
@@ -104,11 +115,11 @@ namespace Farm2.Controllers
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            catch 
+            catch
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            
+
         }
 
 
@@ -117,7 +128,8 @@ namespace Farm2.Controllers
         {
             try
             {
-                if (parcelId!=null) {
+                if (parcelId != null)
+                {
                     var a = from p in PlantData.PlantList
                             where p.IdParcel == parcelId
                             group p by p.PlantType
@@ -136,7 +148,7 @@ namespace Farm2.Controllers
                 }
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
-            catch 
+            catch
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
@@ -145,7 +157,8 @@ namespace Farm2.Controllers
         {
             try
             {
-                if (plantId!=null) {
+                if (plantId != null)
+                {
                     return PlantData.PlantTypeList.Where(p => p.Id == plantId).FirstOrDefault().Name;
                 }
                 return null;
@@ -154,7 +167,7 @@ namespace Farm2.Controllers
             {
                 return null;
             }
-            
+
         }
     }
 }
